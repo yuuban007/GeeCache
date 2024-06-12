@@ -53,7 +53,7 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		panic("HTTPPool severing unexpected path " + r.URL.Path)
 	}
 	p.Log("%s %s", r.Method, r.URL.Path)
-	// /<basePath><groupName>/<key> required
+	// /<basePath>/<groupName>/<key> required
 	parts := strings.SplitN(r.URL.Path[len(p.basePath):], "/", 2)
 	if len(parts) != 2 {
 		http.Error(w, "bad Request", http.StatusBadRequest)
