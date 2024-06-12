@@ -11,8 +11,8 @@ import (
 	"sync"
 )
 
-const defaultBasePath = "/_geecache"
-const defaultReplicas = 3
+const defaultBasePath = "/_geecache/"
+const defaultReplicas = 50
 
 // HTTP pool implements PeerPicker for a pool of HTTP peer
 // HTTPPool implements a pool of HTTP peers that can be used for distributed caching.
@@ -53,8 +53,7 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		panic("HTTPPool severing unexpected path " + r.URL.Path)
 	}
 	p.Log("%s %s", r.Method, r.URL.Path)
-	// /<basePath>/<groupName>/<key> required
-	// 这里 会变成这个从/_geecachescoresTom，想要得到的是/_geecachescores/Tom ？？？
+	// /<basePath><groupName>/<key> required
 	parts := strings.SplitN(r.URL.Path[len(p.basePath):], "/", 2)
 	if len(parts) != 2 {
 		http.Error(w, "bad Request", http.StatusBadRequest)
