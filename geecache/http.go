@@ -1,8 +1,8 @@
 package geecache
 
 import (
-	"consistenthash"
 	"fmt"
+	"geecache/consistenthash"
 	"io"
 	"log"
 	"net/http"
@@ -15,12 +15,17 @@ const defaultBasePath = "/_geecache"
 const defaultReplicas = 3
 
 // HTTP pool implements PeerPicker for a pool of HTTP peer
+// HTTPPool implements a pool of HTTP peers that can be used for distributed caching.
 type HTTPPool struct {
-	// this peer's base URL e.g. "https://example.net:800"
-	self       string
-	basePath   string
-	mu         sync.Mutex
-	peers      *consistenthash.Map
+	// self is the base URL of this peer, e.g. "https://example.net:800".
+	self string
+	// basePath is the base path of the cache server, e.g. "/cache/".
+	basePath string
+	// mu is a mutex to protect the peers and httpGetter maps.
+	mu sync.Mutex
+	// peers is a consistent hash map that stores the URLs of all the peers in the pool.
+	peers *consistenthash.Map
+	// httpGetter is a map that stores the HTTP client for each peer URL.
 	httpGetter map[string]*httpGetter
 }
 
@@ -49,8 +54,8 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Log("%s %s", r.Method, r.URL.Path)
 	// /<basePath>/<groupName>/<key> required
-	//
-	parts := strings.SplitN(r.URL.Path[len(p.basePath)+1:], "/", 2)
+	// 这里 会变成这个从/_geecachescoresTom，想要得到的是/_geecachescores/Tom ？？？
+	parts := strings.SplitN(r.URL.Path[len(p.basePath):], "/", 2)
 	if len(parts) != 2 {
 		http.Error(w, "bad Request", http.StatusBadRequest)
 		return
@@ -75,6 +80,10 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write(view.ByteSlice())
 }
 
+// Set sets the list of peers in the HTTPPool.
+// It takes a variadic parameter `peers` which represents the list of peers to be added.
+// The method uses a consistent hash algorithm to distribute the peers across the hash ring.
+// It also initializes the `httpGetter` map with the base URL for each peer.
 func (p *HTTPPool) Set(peers ...string) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -93,8 +102,8 @@ func (p *HTTPPool) Set(peers ...string) {
 func (p *HTTPPool) PickPeer(key string) (peer PeerGetter, ok bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	// TODO: 这里是什么逻辑，不等于self？
-	if peer := p.peers.Get(key); peer != "" || peer != p.self {
+	// peer not refer to p itself
+	if peer := p.peers.Get(key); peer != "" && peer != p.self {
 		p.Log("pick peer %s", peer)
 		return p.httpGetter[peer], true
 	}
@@ -104,7 +113,7 @@ func (p *HTTPPool) PickPeer(key string) (peer PeerGetter, ok bool) {
 // Get retrieves the value associated with the given group and key from the remote cache server.
 // It returns the value as a byte slice and an error if any occurred.
 func (h *httpGetter) Get(group string, key string) ([]byte, error) {
-	u := fmt.Sprintf("%v%v%v",
+	u := fmt.Sprintf("%v%v/%v",
 		h.baseURL,
 		url.QueryEscape(group),
 		url.QueryEscape(key),
