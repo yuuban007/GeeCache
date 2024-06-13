@@ -2,6 +2,7 @@ package geecache
 
 import (
 	"fmt"
+	"geecache/singleflight"
 	"log"
 	"sync"
 )
@@ -21,6 +22,9 @@ type Group struct {
 	getter    Getter
 	mainCache cache
 	peers     PeerPicker
+	// use singleflight.Group to make sure
+	// that each key is fetched once at the same
+	loader *singleflight.Group
 }
 
 var (
@@ -39,11 +43,10 @@ func NewGroup(name string, cacheBytes int64, getter Getter) *Group {
 	mu.Lock()
 	defer mu.Unlock()
 	g := &Group{
-		name:   name,
-		getter: getter,
-		mainCache: cache{
-			cacheBytes: cacheBytes,
-		},
+		name:      name,
+		getter:    getter,
+		mainCache: cache{cacheBytes: cacheBytes},
+		loader:    &singleflight.Group{},
 	}
 	groups[name] = g
 	return g
@@ -82,18 +85,29 @@ func (g *Group) Get(key string) (ByteView, error) {
 	return g.load(key)
 }
 
-// TODO： add comments and explain it
+// load loads the value for the given key from the cache.
+// If the value is not found in the cache, it tries to retrieve it from the peers.
+// If the peers are available and the value is found, it is stored in the cache and returned.
+// If the peers are not available or the value is not found, it tries to retrieve it locally.
+// If the value is found locally, it is stored in the cache and returned.
+// All the fetch are done through the loader function to make sure that each key is fetched once at the same time.
 func (g *Group) load(key string) (value ByteView, err error) {
-	if g.peers != nil {
-		if peer, ok := g.peers.PickPeer(key); ok {
-			if value, err = g.getFromPeer(peer, key); err == nil {
-				return value, nil
-			}
-			log.Println("[GeeCache] failed to get from peer", err)
-		}
-	}
 
-	return g.getLocally(key)
+	result, err := g.loader.Do(key, func() (interface{}, error) {
+		if g.peers != nil {
+			if peer, ok := g.peers.PickPeer(key); ok {
+				if value, err = g.getFromPeer(peer, key); err == nil {
+					return value, nil
+				}
+				log.Println("[GeeCache] failed to get from peer", err)
+			}
+		}
+		return g.getLocally(key)
+	})
+	if err == nil {
+		return result.(ByteView), nil
+	}
+	return
 }
 
 func (g *Group) getLocally(key string) (ByteView, error) {
