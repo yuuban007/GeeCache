@@ -3,12 +3,15 @@ package geecache
 import (
 	"fmt"
 	"geecache/consistenthash"
+	pb "geecache/geecachepb"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+
+	"github.com/golang/protobuf/proto"
 )
 
 const defaultBasePath = "/_geecache/"
@@ -75,8 +78,14 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Write the value to the response body as a protobuf message
+	body, err := proto.Marshal(&pb.Response{Value: view.ByteSlice()})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
 	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Write(view.ByteSlice())
+	w.Write(body)
 }
 
 // Set sets the list of peers in the HTTPPool.
@@ -111,7 +120,9 @@ func (p *HTTPPool) PickPeer(key string) (peer PeerGetter, ok bool) {
 
 // Get retrieves the value associated with the given group and key from the remote cache server.
 // It returns the value as a byte slice and an error if any occurred.
-func (h *httpGetter) Get(group string, key string) ([]byte, error) {
+func (h *httpGetter) Get(in *pb.Request, out *pb.Response) error {
+	group := in.GetGroup()
+	key := in.GetKey()
 	u := fmt.Sprintf("%v%v/%v",
 		h.baseURL,
 		url.QueryEscape(group),
@@ -120,17 +131,20 @@ func (h *httpGetter) Get(group string, key string) ([]byte, error) {
 
 	res, err := http.Get(u)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("server return: %v", res.Status)
+		return fmt.Errorf("server return: %v", res.Status)
 	}
 
 	bytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, fmt.Errorf("reading response body: %v", err)
+		return fmt.Errorf("reading response body: %v", err)
 	}
-	return bytes, nil
+	if err = proto.Unmarshal(bytes, out); err != nil {
+		return fmt.Errorf("decoding response: %v", err)
+	}
+	return nil
 }

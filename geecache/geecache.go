@@ -2,6 +2,7 @@ package geecache
 
 import (
 	"fmt"
+	pb "geecache/geecachepb"
 	"geecache/singleflight"
 	"log"
 	"sync"
@@ -121,11 +122,16 @@ func (g *Group) getLocally(key string) (ByteView, error) {
 }
 
 func (g *Group) getFromPeer(peer PeerGetter, key string) (ByteView, error) {
-	bytes, err := peer.Get(g.name, key)
+	req := &pb.Request{
+		Group: g.name,
+		Key:   key,
+	}
+	res := &pb.Response{}
+	err := peer.Get(req, res)
 	if err != nil {
 		return ByteView{}, err
 	}
-	value := ByteView{b: cloneBytes(bytes)}
+	value := ByteView{b: res.Value}
 	g.populateCache(key, value)
 	return value, nil
 }

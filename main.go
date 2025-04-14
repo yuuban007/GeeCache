@@ -46,7 +46,7 @@ func startAPIServer(apiAddr string, gee *geecache.Group) {
 			w.Header().Set("Content-Type", "application/octet-stream")
 			w.Write(view.ByteSlice())
 		}))
-	log.Println("fontend sever is running at", apiAddr)
+	log.Println("frontend sever is running at", apiAddr)
 	log.Fatal(http.ListenAndServe(apiAddr[7:], nil))
 }
 
