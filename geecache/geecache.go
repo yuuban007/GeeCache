@@ -22,6 +22,7 @@ type Group struct {
 	name      string
 	getter    Getter
 	mainCache cache
+	hotCache  cache
 	peers     PeerPicker
 	// use singleflight.Group to make sure
 	// that each key is fetched once at the same

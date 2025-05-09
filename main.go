@@ -51,7 +51,6 @@ func startAPIServer(apiAddr string, gee *geecache.Group) {
 }
 
 func main() {
-
 	var port int
 	var api bool
 	flag.IntVar(&port, "port", 8001, "Geecache sever port")
