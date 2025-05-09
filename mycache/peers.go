@@ -1,6 +1,6 @@
-package geecache
+package mycache
 
-import pb "geecache/geecachepb"
+import pb "mycache/mycachepb"
 
 type PeerPicker interface {
 	PickPeer(key string) (peer PeerGetter, ok bool)

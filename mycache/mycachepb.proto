@@ -1,7 +1,7 @@
 syntax = "proto3";
 // option go_package = "geecachepb";
-option go_package = "./geecachepb";
-package geecachepb;
+option go_package = "./mycachepb";
+package mycachepb;
 
 message Request {
 	string group = 1;

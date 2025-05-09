@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"geecache"
+	"mycache"
 
 	"log"
 	"net/http"
@@ -15,8 +15,8 @@ var db = map[string]string{
 	"Sam":  "567",
 }
 
-func createGroup() *geecache.Group {
-	return geecache.NewGroup("scores", 2<<10, geecache.GetterFunc(
+func createGroup() *mycache.Group {
+	return mycache.NewGroup("scores", 2<<10, mycache.GetterFunc(
 		func(key string) ([]byte, error) {
 			log.Println("[SlowDB] search key", key)
 			if v, ok := db[key]; ok {
@@ -26,15 +26,15 @@ func createGroup() *geecache.Group {
 		}))
 }
 
-func startCacheServer(addr string, addrs []string, gee *geecache.Group) {
-	peers := geecache.NewHTTPPool(addr)
+func startCacheServer(addr string, addrs []string, gee *mycache.Group) {
+	peers := mycache.NewHTTPPool(addr)
 	peers.Set(addrs...)
 	gee.RegisterPeers(peers)
-	log.Println("geecache is running at addr", addr)
+	log.Println("mycache is running at addr", addr)
 	log.Fatal(http.ListenAndServe(addr[7:], peers))
 }
 
-func startAPIServer(apiAddr string, gee *geecache.Group) {
+func startAPIServer(apiAddr string, gee *mycache.Group) {
 	http.Handle("/api", http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			key := r.URL.Query().Get("key")
@@ -53,7 +53,7 @@ func startAPIServer(apiAddr string, gee *geecache.Group) {
 func main() {
 	var port int
 	var api bool
-	flag.IntVar(&port, "port", 8001, "Geecache sever port")
+	flag.IntVar(&port, "port", 8001, "mycache sever port")
 	flag.BoolVar(&api, "api", false, "Start a api server?")
 	flag.Parse()
 

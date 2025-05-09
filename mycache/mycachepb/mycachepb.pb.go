@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        v6.30.2
-// source: geecachepb.proto
+// source: mycache/mycachepb.proto
 
-package geecachepb
+package mycachepb
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -31,7 +31,7 @@ type Request struct {
 
 func (x *Request) Reset() {
 	*x = Request{}
-	mi := &file_geecachepb_proto_msgTypes[0]
+	mi := &file_mycache_mycachepb_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +43,7 @@ func (x *Request) String() string {
 func (*Request) ProtoMessage() {}
 
 func (x *Request) ProtoReflect() protoreflect.Message {
-	mi := &file_geecachepb_proto_msgTypes[0]
+	mi := &file_mycache_mycachepb_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +56,7 @@ func (x *Request) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Request.ProtoReflect.Descriptor instead.
 func (*Request) Descriptor() ([]byte, []int) {
-	return file_geecachepb_proto_rawDescGZIP(), []int{0}
+	return file_mycache_mycachepb_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Request) GetGroup() string {
@@ -82,7 +82,7 @@ type Response struct {
 
 func (x *Response) Reset() {
 	*x = Response{}
-	mi := &file_geecachepb_proto_msgTypes[1]
+	mi := &file_mycache_mycachepb_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -94,7 +94,7 @@ func (x *Response) String() string {
 func (*Response) ProtoMessage() {}
 
 func (x *Response) ProtoReflect() protoreflect.Message {
-	mi := &file_geecachepb_proto_msgTypes[1]
+	mi := &file_mycache_mycachepb_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -107,7 +107,7 @@ func (x *Response) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Response.ProtoReflect.Descriptor instead.
 func (*Response) Descriptor() ([]byte, []int) {
-	return file_geecachepb_proto_rawDescGZIP(), []int{1}
+	return file_mycache_mycachepb_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Response) GetValue() []byte {
@@ -117,41 +117,40 @@ func (x *Response) GetValue() []byte {
 	return nil
 }
 
-var File_geecachepb_proto protoreflect.FileDescriptor
+var File_mycache_mycachepb_proto protoreflect.FileDescriptor
 
-const file_geecachepb_proto_rawDesc = "" +
+const file_mycache_mycachepb_proto_rawDesc = "" +
 	"\n" +
-	"\x10geecachepb.proto\x12\n" +
-	"geecachepb\"1\n" +
+	"\x17mycache/mycachepb.proto\x12\tmycachepb\"1\n" +
 	"\aRequest\x12\x14\n" +
 	"\x05group\x18\x01 \x01(\tR\x05group\x12\x10\n" +
 	"\x03key\x18\x02 \x01(\tR\x03key\" \n" +
 	"\bResponse\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\fR\x05value2@\n" +
+	"\x05value\x18\x01 \x01(\fR\x05value2>\n" +
 	"\n" +
-	"GroupCache\x122\n" +
-	"\x03Get\x12\x13.geecachepb.Request\x1a\x14.geecachepb.Response\"\x00B\x0eZ\f./geecachepbb\x06proto3"
+	"GroupCache\x120\n" +
+	"\x03Get\x12\x12.mycachepb.Request\x1a\x13.mycachepb.Response\"\x00B\rZ\v./mycachepbb\x06proto3"
 
 var (
-	file_geecachepb_proto_rawDescOnce sync.Once
-	file_geecachepb_proto_rawDescData []byte
+	file_mycache_mycachepb_proto_rawDescOnce sync.Once
+	file_mycache_mycachepb_proto_rawDescData []byte
 )
 
-func file_geecachepb_proto_rawDescGZIP() []byte {
-	file_geecachepb_proto_rawDescOnce.Do(func() {
-		file_geecachepb_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_geecachepb_proto_rawDesc), len(file_geecachepb_proto_rawDesc)))
+func file_mycache_mycachepb_proto_rawDescGZIP() []byte {
+	file_mycache_mycachepb_proto_rawDescOnce.Do(func() {
+		file_mycache_mycachepb_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mycache_mycachepb_proto_rawDesc), len(file_mycache_mycachepb_proto_rawDesc)))
 	})
-	return file_geecachepb_proto_rawDescData
+	return file_mycache_mycachepb_proto_rawDescData
 }
 
-var file_geecachepb_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_geecachepb_proto_goTypes = []any{
-	(*Request)(nil),  // 0: geecachepb.Request
-	(*Response)(nil), // 1: geecachepb.Response
+var file_mycache_mycachepb_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_mycache_mycachepb_proto_goTypes = []any{
+	(*Request)(nil),  // 0: mycachepb.Request
+	(*Response)(nil), // 1: mycachepb.Response
 }
-var file_geecachepb_proto_depIdxs = []int32{
-	0, // 0: geecachepb.GroupCache.Get:input_type -> geecachepb.Request
-	1, // 1: geecachepb.GroupCache.Get:output_type -> geecachepb.Response
+var file_mycache_mycachepb_proto_depIdxs = []int32{
+	0, // 0: mycachepb.GroupCache.Get:input_type -> mycachepb.Request
+	1, // 1: mycachepb.GroupCache.Get:output_type -> mycachepb.Response
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -159,26 +158,26 @@ var file_geecachepb_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_geecachepb_proto_init() }
-func file_geecachepb_proto_init() {
-	if File_geecachepb_proto != nil {
+func init() { file_mycache_mycachepb_proto_init() }
+func file_mycache_mycachepb_proto_init() {
+	if File_mycache_mycachepb_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_geecachepb_proto_rawDesc), len(file_geecachepb_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mycache_mycachepb_proto_rawDesc), len(file_mycache_mycachepb_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_geecachepb_proto_goTypes,
-		DependencyIndexes: file_geecachepb_proto_depIdxs,
-		MessageInfos:      file_geecachepb_proto_msgTypes,
+		GoTypes:           file_mycache_mycachepb_proto_goTypes,
+		DependencyIndexes: file_mycache_mycachepb_proto_depIdxs,
+		MessageInfos:      file_mycache_mycachepb_proto_msgTypes,
 	}.Build()
-	File_geecachepb_proto = out.File
-	file_geecachepb_proto_goTypes = nil
-	file_geecachepb_proto_depIdxs = nil
+	File_mycache_mycachepb_proto = out.File
+	file_mycache_mycachepb_proto_goTypes = nil
+	file_mycache_mycachepb_proto_depIdxs = nil
 }

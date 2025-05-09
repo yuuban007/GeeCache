@@ -1,9 +1,9 @@
-package geecache
+package mycache
 
 import (
 	"fmt"
-	"geecache/consistenthash"
-	pb "geecache/geecachepb"
+	"mycache/consistenthash"
+	pb "mycache/mycachepb"
 	"io"
 	"log"
 	"net/http"
